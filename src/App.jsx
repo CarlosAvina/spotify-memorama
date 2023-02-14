@@ -6,6 +6,7 @@ function App() {
   const [selectedCard, setSelectedCard] = createSignal();
 
   const grid = Array.from(Array(16).keys(), (_, i) => i + 1);
+  const correctAnswer = Math.round(Math.random() * 16);
 
   function isCardFlipped(element) {
     return flippedCards().some((item) => item === element);
@@ -37,7 +38,22 @@ function App() {
           </button>
         ))}
       </div>
-      <button>Choose</button>
+      <div>
+        <h1>Find number: {correctAnswer}</h1>
+        <button
+          onClick={() => {
+            if (selectedCard() === correctAnswer) {
+              alert("You win");
+              setFlippedCards([]);
+              setSelectedCard();
+            } else {
+              alert("Wrong answer");
+            }
+          }}
+        >
+          Choose
+        </button>
+      </div>
     </div>
   );
 }
