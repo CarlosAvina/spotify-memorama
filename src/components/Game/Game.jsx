@@ -2,20 +2,8 @@ import { Navigate } from "@solidjs/router";
 import { createSignal, onCleanup } from "solid-js";
 import styles from "./Game.module.css";
 
-const stateKey = "spotify_auth_state";
-
-function getHashParams() {
-  let hashParams = {};
-
-  let e = /([^&;=]+)=?([^&;]*)/g;
-  let r = /([^&;=]+)=?([^&;]*)/g;
-  let q = window.location.hash.substring(1);
-
-  while ((e = r.exec(q))) {
-    hashParams[e[1]] = decodeURIComponent(e[2]);
-  }
-  return hashParams;
-}
+import { getHashParams, mergeClasses } from "../../utils/utils";
+import { stateKey } from "../../constants/constants";
 
 const numberOfCards = 16;
 const randomAnswer = Math.round(Math.random() * numberOfCards);
@@ -74,18 +62,21 @@ function Game() {
       <div class={styles.grid}>
         {grid.map((item) => (
           <button
-            class={`${styles.flipCard} ${
-              isCardFlipped(item) ? styles.flipCardClick : null
-            } ${selectedCard() === item ? styles.selectedCard : null}`}
+            class={mergeClasses(
+              styles.flipCard,
+              isCardFlipped(item) ? styles.flipCardClick : null,
+              selectedCard() === item ? styles.selectedCard : null
+            )}
             onClick={() => {
               setSelectedCard(item);
               setFlippedCards([...flippedCards(), item]);
             }}
           >
             <div
-              class={`${styles.flipCardInner} ${
+              class={mergeClasses(
+                styles.flipCardInner,
                 isCardFlipped(item) ? styles.flipCardClick : null
-              }`}
+              )}
             >
               <div class={styles.flipCardFront}></div>
               <div class={styles.flipCardBack}>

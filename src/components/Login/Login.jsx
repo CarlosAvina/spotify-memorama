@@ -1,13 +1,5 @@
-function generateRandomString(length) {
-  let text = "";
-  const possible =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-  for (let i = 0; i < length; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-}
+import { generateRandomString } from "../../utils/utils";
+import { stateKey } from "../../constants/constants";
 
 function logIn() {
   const client_id = import.meta.env.VITE_CLIENT_ID; // Your client id
@@ -27,8 +19,6 @@ function logIn() {
 
   window.location = url;
 }
-
-const stateKey = "spotify_auth_state";
 
 function Login() {
   return (
