@@ -1,3 +1,4 @@
+import Login from "./Login/Login";
 import Game from "./Game/Game";
 
-export { Game };
+export { Login, Game };

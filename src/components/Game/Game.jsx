@@ -1,5 +1,21 @@
+import { Navigate } from "@solidjs/router";
 import { createSignal, onCleanup } from "solid-js";
 import styles from "./Game.module.css";
+
+const stateKey = "spotify_auth_state";
+
+function getHashParams() {
+  let hashParams = {};
+
+  let e = /([^&;=]+)=?([^&;]*)/g;
+  let r = /([^&;=]+)=?([^&;]*)/g;
+  let q = window.location.hash.substring(1);
+
+  while ((e = r.exec(q))) {
+    hashParams[e[1]] = decodeURIComponent(e[2]);
+  }
+  return hashParams;
+}
 
 const numberOfCards = 16;
 const randomAnswer = Math.round(Math.random() * numberOfCards);
@@ -22,6 +38,25 @@ function Game() {
 
   function isCardFlipped(element) {
     return flippedCards().some((item) => item === element);
+  }
+
+  const params = getHashParams();
+
+  const access_token = params.access_token,
+    state = params.state,
+    storedState = localStorage.getItem(stateKey);
+
+  if (access_token && (state == null || state !== storedState)) {
+    return <Navigate href="/" />;
+  } else {
+    localStorage.removeItem(stateKey);
+    if (access_token) {
+      fetch("https://api.spotify.com/v1/me/tracks", {
+        headers: {
+          Authorization: "Bearer " + access_token,
+        },
+      }).then(async (res) => console.log({ res: await res.json() }));
+    }
   }
 
   function resetGame({ win }) {

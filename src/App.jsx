@@ -1,19 +1,11 @@
-import { Routes, Route, A } from "@solidjs/router";
+import { Routes, Route } from "@solidjs/router";
 
-import { Game } from "./components";
+import { Login, Game } from "./components";
 
 function App() {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <div>
-            <h1>Log in</h1>
-            <A href="/home">Play game</A>
-          </div>
-        }
-      />
+      <Route path="/" component={Login} />
       <Route path="/home" component={Game} />
     </Routes>
   );
