@@ -1,11 +1,13 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@solidjs/router': ^0.7.0
   solid-js: ^1.6.10
   vite: ^4.1.1
   vite-plugin-solid: ^2.5.0
 
 dependencies:
+  '@solidjs/router': 0.7.0_solid-js@1.6.10
   solid-js: 1.6.10
 
 devDependencies:
@@ -564,6 +566,14 @@ packages:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
+
+  /@solidjs/router/0.7.0_solid-js@1.6.10:
+    resolution: {integrity: sha512-8HI84twe5FjYRebSLMAhtkL9bRuTDIlxJK56kjfjU9WKGoUCTaWpCnkuj8Hqde1bWZ0X+GOZxKDfNkn1CjtjxA==}
+    peerDependencies:
+      solid-js: ^1.5.3
+    dependencies:
+      solid-js: 1.6.10
+    dev: false
 
   /ansi-styles/3.2.1:
     resolution: {integrity: sha512-VT0ZI6kZRdTh8YyJw3SMbYm/u+NqfsAxEpWO0Pf9sq8/e94WxxOpPKx9FR1FlyCtOVDNOQ+8ntlqFxiRc+r5qA==}
