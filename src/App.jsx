@@ -1,15 +1,37 @@
-import { createSignal } from "solid-js";
+import { createSignal, onCleanup } from "solid-js";
 import styles from "./App.module.css";
+
+const numberOfCards = 16;
+const randomAnswer = Math.round(Math.random() * numberOfCards);
+const initialTime = 15;
 
 function App() {
   const [flippedCards, setFlippedCards] = createSignal([]);
   const [selectedCard, setSelectedCard] = createSignal();
+  const [correctAnswer, setCorrectAnswer] = createSignal(randomAnswer);
+  const [timer, setTimer] = createSignal(initialTime);
 
-  const grid = Array.from(Array(16).keys(), (_, i) => i + 1);
-  const correctAnswer = Math.round(Math.random() * 16);
+  const grid = Array.from(Array(numberOfCards).keys(), (_, i) => i + 1);
+
+  const interval = setInterval(() => {
+    if (timer() > 0) setTimer((timer) => timer - 1);
+    if (timer() === 0) resetGame({ win: false });
+  }, 1000);
+
+  onCleanup(() => clearInterval(interval));
 
   function isCardFlipped(element) {
     return flippedCards().some((item) => item === element);
+  }
+
+  function resetGame({ win }) {
+    setFlippedCards([]);
+    setSelectedCard();
+    setTimer(initialTime);
+    setCorrectAnswer(randomAnswer);
+
+    const alertText = win ? "You win!" : "You lose";
+    alert(alertText);
   }
 
   return (
@@ -39,13 +61,12 @@ function App() {
         ))}
       </div>
       <div>
-        <h1>Find number: {correctAnswer}</h1>
+        <h1>Timer: {timer()}</h1>
+        <h1>Find number: {correctAnswer()}</h1>
         <button
           onClick={() => {
-            if (selectedCard() === correctAnswer) {
-              alert("You win");
-              setFlippedCards([]);
-              setSelectedCard();
+            if (selectedCard() === correctAnswer()) {
+              resetGame({ win: true });
             } else {
               alert("Wrong answer");
             }
