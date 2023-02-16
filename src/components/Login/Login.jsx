@@ -24,7 +24,9 @@ function Login() {
   return (
     <div>
       <h1>You need to log into Spotify</h1>
-      <button onClick={logIn}>Log in</button>
+      <button type="button" onClick={logIn}>
+        Log in
+      </button>
     </div>
   );
 }

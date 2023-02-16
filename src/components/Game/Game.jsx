@@ -1,32 +1,29 @@
 import { Navigate } from "@solidjs/router";
-import { createSignal, onCleanup } from "solid-js";
+import { createSignal, onCleanup, createEffect } from "solid-js";
 import styles from "./Game.module.css";
 
 import { getHashParams, mergeClasses } from "../../utils/utils";
 import { stateKey } from "../../constants/constants";
 
 const numberOfCards = 16;
-const randomAnswer = Math.round(Math.random() * numberOfCards);
-const initialTime = 15;
+const randomAnswer = () => Math.round(Math.random() * numberOfCards);
+const initialTime = 30;
 
 function Game() {
   const [flippedCards, setFlippedCards] = createSignal([]);
   const [selectedCard, setSelectedCard] = createSignal();
-  const [correctAnswer, setCorrectAnswer] = createSignal(randomAnswer);
+  const [correctAnswer, setCorrectAnswer] = createSignal(randomAnswer());
   const [timer, setTimer] = createSignal(initialTime);
+  const [tracks, setTracks] = createSignal([]);
 
+  let audioElement;
   const grid = Array.from(Array(numberOfCards).keys(), (_, i) => i + 1);
 
-  const interval = setInterval(() => {
-    if (timer() > 0) setTimer((timer) => timer - 1);
-    if (timer() === 0) resetGame({ win: false });
-  }, 1000);
-
-  onCleanup(() => clearInterval(interval));
-
-  function isCardFlipped(element) {
-    return flippedCards().some((item) => item === element);
-  }
+  createEffect(() => {
+    if (tracks().length) {
+      audioElement.play();
+    }
+  });
 
   const params = getHashParams();
 
@@ -43,18 +40,37 @@ function Game() {
         headers: {
           Authorization: "Bearer " + access_token,
         },
-      }).then(async (res) => console.log({ res: await res.json() }));
+      }).then(async (res) => {
+        const response = await res.json();
+
+        if (!res.ok) throw Error("spotify error", { cause: response });
+
+        setTracks(response.items);
+      });
     }
+  }
+
+  function startGame() {
+    const interval = setInterval(() => {
+      if (timer() > 0) setTimer((timer) => timer - 1);
+      if (timer() === 0) resetGame({ win: false });
+    }, 1000);
+
+    onCleanup(() => clearInterval(interval));
   }
 
   function resetGame({ win }) {
     setFlippedCards([]);
     setSelectedCard();
     setTimer(initialTime);
-    setCorrectAnswer(randomAnswer);
+    setCorrectAnswer(randomAnswer());
 
     const alertText = win ? "You win!" : "You lose";
     alert(alertText);
+  }
+
+  function isCardFlipped(element) {
+    return flippedCards().some((item) => item === element);
   }
 
   return (
@@ -87,9 +103,13 @@ function Game() {
         ))}
       </div>
       <div>
+        <button type="button" onClick={startGame}>
+          Start
+        </button>
         <h1>Timer: {timer()}</h1>
         <h1>Find number: {correctAnswer()}</h1>
         <button
+          type="button"
           onClick={() => {
             if (selectedCard() === correctAnswer()) {
               resetGame({ win: true });
@@ -100,6 +120,15 @@ function Game() {
         >
           Choose
         </button>
+
+        <audio ref={audioElement} controls>
+          {tracks().length && (
+            <source
+              src={tracks().length ? tracks()[0].track.preview_url : null}
+            ></source>
+          )}
+          Not supported by your browser
+        </audio>
       </div>
     </div>
   );
