@@ -1,5 +1,5 @@
 import { Navigate } from "@solidjs/router";
-import { createSignal, onCleanup, createEffect } from "solid-js";
+import { createSignal, onCleanup } from "solid-js";
 import styles from "./Game.module.css";
 
 import { getHashParams, mergeClasses } from "../../utils/utils";
@@ -15,15 +15,12 @@ function Game() {
   const [correctAnswer, setCorrectAnswer] = createSignal(randomAnswer());
   const [timer, setTimer] = createSignal(initialTime);
   const [tracks, setTracks] = createSignal([]);
+  const [currentLevel, setCurrentLevel] = createSignal(0);
 
   let audioElement;
   const grid = Array.from(Array(numberOfCards).keys(), (_, i) => i + 1);
-
-  createEffect(() => {
-    if (tracks().length) {
-      audioElement.play();
-    }
-  });
+  const trackImages = () => tracks().map((item) => item.track.album.images[0]);
+  const currentAudioSrc = () => tracks()[currentLevel()].track.preview_url;
 
   const params = getHashParams();
 
@@ -51,6 +48,8 @@ function Game() {
   }
 
   function startGame() {
+    audioElement.play();
+
     const interval = setInterval(() => {
       if (timer() > 0) setTimer((timer) => timer - 1);
       if (timer() === 0) resetGame({ win: false });
@@ -64,6 +63,16 @@ function Game() {
     setSelectedCard();
     setTimer(initialTime);
     setCorrectAnswer(randomAnswer());
+
+    setCurrentLevel((value) => {
+      if (win) return value + 1;
+      return value;
+    });
+
+    // Fix audio logic
+    audioElement.currentTime = 0;
+    audioElement.src = tracks()[currentLevel() + 1].track.preview_url;
+    audioElement.play();
 
     const alertText = win ? "You win!" : "You lose";
     alert(alertText);
@@ -96,13 +105,21 @@ function Game() {
             >
               <div class={styles.flipCardFront}></div>
               <div class={styles.flipCardBack}>
-                <p class={styles.cardBackText}>{item}</p>
+                {trackImages()[item] ? (
+                  <img
+                    class={styles.cardBackImage}
+                    src={trackImages()[item].url}
+                    width={trackImages()[item].width}
+                    height={trackImages()[item].height}
+                  />
+                ) : null}
               </div>
             </div>
           </button>
         ))}
       </div>
       <div>
+        <h1>Current level: {currentLevel()}</h1>
         <button type="button" onClick={startGame}>
           Start
         </button>
@@ -122,11 +139,7 @@ function Game() {
         </button>
 
         <audio ref={audioElement} controls>
-          {tracks().length && (
-            <source
-              src={tracks().length ? tracks()[0].track.preview_url : null}
-            ></source>
-          )}
+          {tracks().length && <source src={currentAudioSrc()}></source>}
           Not supported by your browser
         </audio>
       </div>

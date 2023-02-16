@@ -27,7 +27,6 @@
 
   border: none;
   padding: 0;
-  border-radius: 20px;
 }
 
 /* This container is needed to position the front and back side */
@@ -36,7 +35,7 @@
   width: 100%;
   height: 100%;
   text-align: center;
-  transition: transform 0.8s;
+  transition: transform 0.5s;
   transform-style: preserve-3d;
 }
 
@@ -59,20 +58,20 @@
 .flipCardFront {
   background-color: dodgerblue;
   color: black;
-
-  border-radius: 20px;
 }
 
 /* Style the back side */
 .flipCardBack {
   background-color: #bbb;
   color: white;
-  border-radius: 20px;
   transform: rotateY(180deg);
 }
 
-.cardBackText {
+.cardBackImage {
   transform: rotateY(180deg);
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .selectedCard {
