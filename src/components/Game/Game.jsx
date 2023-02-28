@@ -33,7 +33,7 @@ function Game() {
   } else {
     localStorage.removeItem(stateKey);
     if (access_token) {
-      fetch("https://api.spotify.com/v1/me/tracks", {
+      fetch("https://api.spotify.com/v1/me/tracks?limit=16&offset=0", {
         headers: {
           Authorization: "Bearer " + access_token,
         },
