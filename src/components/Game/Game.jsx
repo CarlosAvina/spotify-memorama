@@ -6,7 +6,7 @@ import { getHashParams, mergeClasses } from "../../utils/utils";
 import { stateKey } from "../../constants/constants";
 
 const numberOfCards = 16;
-const randomAnswer = () => Math.round(Math.random() * numberOfCards);
+const randomAnswer = () => Math.floor(Math.random() * numberOfCards) + 1;
 const initialTime = 30;
 
 function Game() {
