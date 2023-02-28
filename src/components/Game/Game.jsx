@@ -6,7 +6,7 @@ import { getHashParams, mergeClasses } from "../../utils/utils";
 import { stateKey } from "../../constants/constants";
 
 const numberOfCards = 16;
-const randomAnswer = () => Math.floor(Math.random() * numberOfCards) + 1;
+const randomAnswer = () => Math.floor(Math.random() * numberOfCards);
 const initialTime = 30;
 
 function Game() {
@@ -18,9 +18,9 @@ function Game() {
   const [currentLevel, setCurrentLevel] = createSignal(0);
 
   let audioElement;
-  const grid = Array.from(Array(numberOfCards).keys(), (_, i) => i + 1);
+  const grid = Array.from(Array(numberOfCards).keys());
   const trackImages = () => tracks().map((item) => item.track.album.images[0]);
-  const currentAudioSrc = () => tracks()[currentLevel()].track.preview_url;
+  const currentAudioSrc = () => tracks()[correctAnswer()].track.preview_url;
 
   const params = getHashParams();
 
@@ -71,7 +71,7 @@ function Game() {
 
     // Fix audio logic
     audioElement.currentTime = 0;
-    audioElement.src = tracks()[currentLevel() + 1].track.preview_url;
+    audioElement.src = tracks()[correctAnswer()].track.preview_url;
     audioElement.play();
 
     const alertText = win ? "You win!" : "You lose";
@@ -124,7 +124,6 @@ function Game() {
           Start
         </button>
         <h1>Timer: {timer()}</h1>
-        <h1>Find number: {correctAnswer()}</h1>
         <button
           type="button"
           onClick={() => {
