@@ -2,7 +2,9 @@ import { Navigate } from "@solidjs/router";
 import { createSignal, onCleanup } from "solid-js";
 import styles from "./Game.module.css";
 
-import { getHashParams, mergeClasses } from "../../utils/utils";
+import SongCard from "../SongCard/SongCard";
+
+import { getHashParams } from "../../utils/utils";
 import { stateKey } from "../../constants/constants";
 
 const numberOfCards = 16;
@@ -82,40 +84,21 @@ function Game() {
     return flippedCards().some((item) => item === element);
   }
 
+  function flipSongCard(item) {
+    setSelectedCard(item);
+    setFlippedCards([...flippedCards(), item]);
+  }
+
   return (
     <div class={styles.app}>
       <div class={styles.grid}>
         {grid.map((item) => (
-          <button
-            class={mergeClasses(
-              styles.flipCard,
-              isCardFlipped(item) ? styles.flipCardClick : null,
-              selectedCard() === item ? styles.selectedCard : null
-            )}
-            onClick={() => {
-              setSelectedCard(item);
-              setFlippedCards([...flippedCards(), item]);
-            }}
-          >
-            <div
-              class={mergeClasses(
-                styles.flipCardInner,
-                isCardFlipped(item) ? styles.flipCardClick : null
-              )}
-            >
-              <div class={styles.flipCardFront}></div>
-              <div class={styles.flipCardBack}>
-                {trackImages()[item] ? (
-                  <img
-                    class={styles.cardBackImage}
-                    src={trackImages()[item].url}
-                    width={trackImages()[item].width}
-                    height={trackImages()[item].height}
-                  />
-                ) : null}
-              </div>
-            </div>
-          </button>
+          <SongCard
+            trackImage={trackImages()[item]}
+            isCardFlipped={isCardFlipped(item)}
+            isCardSelected={selectedCard() === item}
+            flipSongCard={() => flipSongCard(item)}
+          />
         ))}
       </div>
       <div>
