@@ -18,7 +18,7 @@ function Game() {
   const [timer, setTimer] = createSignal(initialTime);
   // TODO: fix any type
   const [tracks, setTracks] = createSignal<any>([]);
-  const [currentLevel, setCurrentLevel] = createSignal(0);
+  const [score, setScore] = createSignal(0);
 
   let audioElement: HTMLAudioElement;
   const grid = Array.from(Array(numberOfCards).keys());
@@ -68,7 +68,7 @@ function Game() {
     setTimer(initialTime);
     setCorrectAnswer(randomAnswer());
 
-    setCurrentLevel((value) => {
+    setScore((value) => {
       if (win) return value + 1;
       return value;
     });
@@ -104,7 +104,7 @@ function Game() {
         ))}
       </div>
       <div>
-        <h1>Current level: {currentLevel()}</h1>
+        <h1>Score: {score()}</h1>
         <button type="button" onClick={startGame}>
           Start
         </button>
