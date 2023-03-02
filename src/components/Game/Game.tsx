@@ -1,8 +1,8 @@
-import { Navigate } from "@solidjs/router";
+import { Navigate, useNavigate } from "@solidjs/router";
 import { createSignal, onCleanup, createEffect } from "solid-js";
 import styles from "./Game.module.css";
 
-import SongCard from "../SongCard/SongCard";
+import { SongCard, Dialog } from "../";
 
 import { getHashParams } from "../../utils/utils";
 import { stateKey } from "../../constants/constants";
@@ -20,12 +20,17 @@ function Game() {
   const [tracks, setTracks] = createSignal<any>([]);
   const [score, setScore] = createSignal(0);
   const [lives, setLives] = createSignal(3);
+  const [gameOverDialog, setGameOverDialog] = createSignal(false);
+
+  const navigate = useNavigate();
 
   let audioElement: HTMLAudioElement;
   const grid = Array.from(Array(numberOfCards).keys());
 
   createEffect(() => {
-    if (lives() === 0) return <Navigate href="/" />;
+    if (lives() === 0) {
+      setGameOverDialog(true);
+    }
   });
 
   // TODO: fix any type
@@ -64,32 +69,38 @@ function Game() {
     const interval = setInterval(() => {
       if (timer() > 0) setTimer((timer) => timer - 1);
       if (timer() === 0) {
-        resetGame({ win: false });
+        prepareNextLevel({ scorePoint: false });
         setLives((prev) => prev - 1);
+        alert("Time is over");
       }
     }, 1000);
 
     onCleanup(() => clearInterval(interval));
   }
 
-  function resetGame({ win }: { win: boolean }) {
+  function resetGame({ hardReset }: { hardReset: boolean }) {
     setFlippedCards([]);
     setSelectedCard();
     setTimer(initialTime);
     setCorrectAnswer(randomAnswer());
 
-    setScore((value) => {
-      if (win) return value + 1;
-      return value;
-    });
+    if (hardReset) {
+      setScore(0);
+      setLives(3);
+    }
 
-    // Fix audio logic
     audioElement.currentTime = 0;
     audioElement.src = tracks()[correctAnswer()].track.preview_url;
     audioElement.play();
+  }
 
-    const alertText = win ? "You win!" : "You lose";
-    alert(alertText);
+  function prepareNextLevel({ scorePoint }: { scorePoint: boolean }) {
+    resetGame({ hardReset: false });
+
+    setScore((value) => {
+      if (scorePoint) return value + 1;
+      return value;
+    });
   }
 
   function isCardFlipped(element: number) {
@@ -103,11 +114,26 @@ function Game() {
 
   function onChooseCard() {
     if (selectedCard() === correctAnswer()) {
-      resetGame({ win: true });
+      prepareNextLevel({ scorePoint: true });
+      alert("Correct answer!");
     } else {
-      alert("Wrong answer");
       setLives((prev) => prev - 1);
+      alert("Wrong answer");
     }
+  }
+
+  function onGameOver(
+    e: Event & {
+      currentTarget: HTMLDialogElement;
+      target: Element;
+    }
+  ) {
+    const continuePlaying = Boolean(Number(e.currentTarget.returnValue));
+
+    if (!continuePlaying) navigate("/");
+
+    setGameOverDialog(false);
+    resetGame({ hardReset: true });
   }
 
   return (
@@ -139,6 +165,11 @@ function Game() {
           Not supported by your browser
         </audio>
       </div>
+      <Dialog
+        score={score()}
+        showDialog={gameOverDialog()}
+        onClose={onGameOver}
+      />
     </div>
   );
 }
