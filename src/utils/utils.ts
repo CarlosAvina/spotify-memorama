@@ -1,17 +1,19 @@
-export function getHashParams() {
+export function getHashParams(): { access_token?: string; state?: string } {
   let hashParams = {};
 
   let e = /([^&;=]+)=?([^&;]*)/g;
   let r = /([^&;=]+)=?([^&;]*)/g;
   let q = window.location.hash.substring(1);
 
+  // @ts-ignore
   while ((e = r.exec(q))) {
+    // @ts-ignore
     hashParams[e[1]] = decodeURIComponent(e[2]);
   }
   return hashParams;
 }
 
-export function generateRandomString(length) {
+export function generateRandomString(length: number) {
   let text = "";
   const possible =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -22,7 +24,7 @@ export function generateRandomString(length) {
   return text;
 }
 
-export function mergeClasses(...classes) {
+export function mergeClasses(...classes: Array<string | null>) {
   let result = "";
 
   const classArray = [...classes];

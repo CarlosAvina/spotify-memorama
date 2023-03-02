@@ -1,7 +1,20 @@
 import styles from "./SongCard.module.css";
 import { mergeClasses } from "../../utils/utils";
 
-function SongCard(props) {
+type TrackImage = {
+  width: string;
+  height: string;
+  url: string;
+};
+
+type Props = {
+  trackImage: TrackImage;
+  isCardFlipped: boolean;
+  isCardSelected: boolean;
+  flipSongCard: () => void;
+};
+
+function SongCard(props: Props) {
   return (
     <button
       class={mergeClasses(

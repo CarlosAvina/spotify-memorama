@@ -10,14 +10,14 @@ function logIn() {
   localStorage.setItem(stateKey, state);
   const scope = "user-read-private user-read-email user-library-read";
 
-  let url = "https://accounts.spotify.com/authorize";
+  let url: unknown = "https://accounts.spotify.com/authorize";
   url += "?response_type=token";
   url += "&client_id=" + encodeURIComponent(client_id);
   url += "&scope=" + encodeURIComponent(scope);
   url += "&redirect_uri=" + encodeURIComponent(redirect_uri);
   url += "&state=" + encodeURIComponent(state);
 
-  window.location = url;
+  window.location = url as Location;
 }
 
 function Login() {

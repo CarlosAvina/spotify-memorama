@@ -12,16 +12,18 @@ const randomAnswer = () => Math.floor(Math.random() * numberOfCards);
 const initialTime = 30;
 
 function Game() {
-  const [flippedCards, setFlippedCards] = createSignal([]);
+  const [flippedCards, setFlippedCards] = createSignal<Array<number>>([]);
   const [selectedCard, setSelectedCard] = createSignal();
   const [correctAnswer, setCorrectAnswer] = createSignal(randomAnswer());
   const [timer, setTimer] = createSignal(initialTime);
-  const [tracks, setTracks] = createSignal([]);
+  // TODO: fix any type
+  const [tracks, setTracks] = createSignal<any>([]);
   const [currentLevel, setCurrentLevel] = createSignal(0);
 
-  let audioElement;
+  let audioElement: HTMLAudioElement;
   const grid = Array.from(Array(numberOfCards).keys());
-  const trackImages = () => tracks().map((item) => item.track.album.images[0]);
+  // TODO: fix any type
+  const trackImages = () => tracks().map((item: any) => item.track.album.images[0]);
   const currentAudioSrc = () => tracks()[correctAnswer()].track.preview_url;
 
   const params = getHashParams();
@@ -60,7 +62,7 @@ function Game() {
     onCleanup(() => clearInterval(interval));
   }
 
-  function resetGame({ win }) {
+  function resetGame({ win }: { win: boolean }) {
     setFlippedCards([]);
     setSelectedCard();
     setTimer(initialTime);
@@ -80,13 +82,13 @@ function Game() {
     alert(alertText);
   }
 
-  function isCardFlipped(element) {
+  function isCardFlipped(element: number) {
     return flippedCards().some((item) => item === element);
   }
 
-  function flipSongCard(item) {
+  function flipSongCard(item: number) {
     setSelectedCard(item);
-    setFlippedCards([...flippedCards(), item]);
+    setFlippedCards((prev) => [...prev, item]);
   }
 
   return (
@@ -119,7 +121,8 @@ function Game() {
         >
           Choose
         </button>
-
+        {/* TODO: fix typescript issue */}
+        {/* @ts-ignore */}
         <audio ref={audioElement} controls>
           {tracks().length && <source src={currentAudioSrc()}></source>}
           Not supported by your browser
