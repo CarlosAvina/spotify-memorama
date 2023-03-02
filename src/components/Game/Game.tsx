@@ -1,5 +1,5 @@
 import { Navigate } from "@solidjs/router";
-import { createSignal, onCleanup } from "solid-js";
+import { createSignal, onCleanup, createEffect } from "solid-js";
 import styles from "./Game.module.css";
 
 import SongCard from "../SongCard/SongCard";
@@ -19,11 +19,18 @@ function Game() {
   // TODO: fix any type
   const [tracks, setTracks] = createSignal<any>([]);
   const [score, setScore] = createSignal(0);
+  const [lives, setLives] = createSignal(3);
 
   let audioElement: HTMLAudioElement;
   const grid = Array.from(Array(numberOfCards).keys());
+
+  createEffect(() => {
+    if (lives() === 0) return <Navigate href="/" />;
+  });
+
   // TODO: fix any type
-  const trackImages = () => tracks().map((item: any) => item.track.album.images[0]);
+  const trackImages = () =>
+    tracks().map((item: any) => item.track.album.images[0]);
   const currentAudioSrc = () => tracks()[correctAnswer()].track.preview_url;
 
   const params = getHashParams();
@@ -56,7 +63,10 @@ function Game() {
 
     const interval = setInterval(() => {
       if (timer() > 0) setTimer((timer) => timer - 1);
-      if (timer() === 0) resetGame({ win: false });
+      if (timer() === 0) {
+        resetGame({ win: false });
+        setLives((prev) => prev - 1);
+      }
     }, 1000);
 
     onCleanup(() => clearInterval(interval));
@@ -91,6 +101,15 @@ function Game() {
     setFlippedCards((prev) => [...prev, item]);
   }
 
+  function onChooseCard() {
+    if (selectedCard() === correctAnswer()) {
+      resetGame({ win: true });
+    } else {
+      alert("Wrong answer");
+      setLives((prev) => prev - 1);
+    }
+  }
+
   return (
     <div class={styles.app}>
       <div class={styles.grid}>
@@ -104,26 +123,18 @@ function Game() {
         ))}
       </div>
       <div>
-        <h1>Score: {score()}</h1>
         <button type="button" onClick={startGame}>
           Start
         </button>
+        <h1>Lives: {lives()}</h1>
+        <h1>Score: {score()}</h1>
         <h1>Timer: {timer()}</h1>
-        <button
-          type="button"
-          onClick={() => {
-            if (selectedCard() === correctAnswer()) {
-              resetGame({ win: true });
-            } else {
-              alert("Wrong answer");
-            }
-          }}
-        >
+        <button type="button" onClick={onChooseCard}>
           Choose
         </button>
         {/* TODO: fix typescript issue */}
         {/* @ts-ignore */}
-        <audio ref={audioElement} controls>
+        <audio class={styles.hidAudio} ref={audioElement} controls>
           {tracks().length && <source src={currentAudioSrc()}></source>}
           Not supported by your browser
         </audio>

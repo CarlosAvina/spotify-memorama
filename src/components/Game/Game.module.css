@@ -15,3 +15,7 @@
   justify-items: center;
   gap: 30px;
 }
+
+.hidAudio {
+  display: none;
+}
