@@ -1,6 +1,5 @@
 import { Navigate, useNavigate } from "@solidjs/router";
 import { createSignal, onCleanup, createEffect } from "solid-js";
-import styles from "./Game.module.css";
 
 import { SongCard, Dialog } from "../";
 
@@ -137,8 +136,8 @@ function Game() {
   }
 
   return (
-    <div class={styles.app}>
-      <div class={styles.grid}>
+    <div class="flex justify-center items-center gap-12 h-screen">
+      <div class="grid grid-cols-[min-content_min-content_min-content_min-content] grid-rows-[min-content_min-content_min-content_min-content] text-center justify-center justify-items-center gap-8">
         {grid.map((item) => (
           <SongCard
             trackImage={trackImages()[item]}
@@ -160,7 +159,7 @@ function Game() {
         </button>
         {/* TODO: fix typescript issue */}
         {/* @ts-ignore */}
-        <audio class={styles.hidAudio} ref={audioElement} controls>
+        <audio class="hidden" ref={audioElement} controls>
           {tracks().length && <source src={currentAudioSrc()}></source>}
           Not supported by your browser
         </audio>

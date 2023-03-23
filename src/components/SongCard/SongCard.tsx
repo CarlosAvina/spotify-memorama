@@ -1,4 +1,3 @@
-import styles from "./SongCard.module.css";
 import { mergeClasses } from "../../utils/utils";
 
 type TrackImage = {
@@ -18,23 +17,23 @@ function SongCard(props: Props) {
   return (
     <button
       class={mergeClasses(
-        styles.flipCard,
-        props.isCardFlipped ? styles.flipCardClick : null,
-        props.isCardSelected ? styles.selectedCard : null
+        "bg-transparent w-52 h-52 cursor-pointer p-0 perspective rounded-md",
+        props.isCardFlipped ? "rotate-y-180" : null,
+        props.isCardSelected ? "border-4 border-solid border-yellow-300" : null
       )}
       onClick={props.flipSongCard}
     >
       <div
         class={mergeClasses(
-          styles.flipCardInner,
-          props.isCardFlipped ? styles.flipCardClick : null
+          "relative w-full h-full text-center transition-transform duration-500 transform-style",
+          props.isCardFlipped ? "rotate-y-180" : null
         )}
       >
-        <div class={styles.flipCardFront}></div>
-        <div class={styles.flipCardBack}>
+        <div class="absolute w-full h-full bg-sky-500 text-black backface-visibility"></div>
+        <div class="absolute w-full h-full bg-slate-500 text-white rotate-y-180 backface-visibility">
           {props.trackImage ? (
             <img
-              class={styles.cardBackImage}
+              class="rotate-y-180 w-full h-full overflow-hidden"
               src={props.trackImage.url}
               width={props.trackImage.width}
               height={props.trackImage.height}
